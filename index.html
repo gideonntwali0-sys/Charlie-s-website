@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>My Web Development Practical</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;800&display=swap" rel="stylesheet" />
+
+  <!-- ============================================================
+       STYLE.CSS — embedded (Task 3)
+       CSS Selectors demonstrated:
+         • Element:    body, p, h1, table
+         • Class:      .highlight, .styled-list, .field-error
+         • ID:         #mainTitle
+         • Descendant: nav ul li
+         • Pseudo:     a:hover, button:hover
+  ============================================================ -->
+  <style>
+
+    /* ── CSS Variables ── */
+    :root {
+      --bg:           #0d0d0d;
+      --bg-card:      #161616;
+      --accent:       #00ff88;
+      --accent2:      #00ccff;
+      --text:         #f0f0f0;
+      --text-muted:   #888;
+      --border:       #2a2a2a;
+      --font-display: 'Syne', sans-serif;
+      --font-mono:    'Space Mono', monospace;
+      --radius:       12px;
+      --transition:   0.3s ease;
+      --shadow:       0 8px 32px rgba(0,0,0,0.4);
+    }
+
+    /* Light-mode variable overrides */
+    body.light-mode {
+      --bg:         #f5f5f0;
+      --bg-card:    #ffffff;
+      --text:       #111111;
+      --text-muted: #555;
+      --border:     #ddd;
+      --shadow:     0 8px 32px rgba(0,0,0,0.08);
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Element selector: body */
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: var(--font-display);
+      font-size: 16px;
+      line-height: 1.7;
+      transition: background var(--transition), color var(--transition);
+    }
+
+    /* Element selector: h1 */
+    h1 {
+      font-size: clamp(2.2rem, 6vw, 4.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      font-weight: 800;
+      margin-bottom: 2rem;
+      position: relative;
+      display: inline-block;
+    }
+    h2::after {
+      content: '';
+      position: absolute;
+      bottom: -6px; left: 0;
+      width: 40%; height: 3px;
+      background: var(--accent);
+      border-radius: 2px;
+    }
+
+    h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 1rem; color: var(--accent); }
+
+    /* Element selector: p */
+    p { color: var(--text-muted); margin-bottom: 1rem; }
+
+    /* ── ID Selector: #mainTitle ── */
+    #mainTitle {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── HEADER ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,13,13,0.88);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--border);
+    }
+    body.light-mode header { background: rgba(245,245,240,0.92); }
+
+    .header-inner {
+      max-width: 1200px; margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 1rem;
+    }
+
+    .logo {
+      font-family: var(--font-mono); font-size: 1.3rem;
+      font-weight: 700; color: var(--text);
+      letter-spacing: -0.03em; cursor: pointer;
+      user-select: none;
+    }
+    .logo span { color: var(--accent); }
+
+    /* ── NAV — Styled Navigation Menu ── */
+    nav ul { list-style: none; display: flex; gap: 0.25rem; flex-wrap: wrap; }
+
+    /* Descendant selector: nav ul li */
+    nav ul li { display: inline; }
+
+    nav ul li a {
+      font-family: var(--font-mono); font-size: 0.8rem;
+      text-decoration: none; color: var(--text-muted);
+      padding: 0.4rem 0.8rem; border-radius: 6px;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      transition: background var(--transition), color var(--transition);
+      cursor: pointer; user-select: none;
+    }
+
+    /* Pseudo-class: a:hover */
+    nav ul li a:hover { color: var(--accent); background: rgba(0,255,136,0.08); }
+    nav ul li a.active { color: var(--accent); background: rgba(0,255,136,0.12); }
+
+    /* ── SPA PAGES ── */
+    .page { display: none; }
+    .page.active-page { display: block; }
+
+    /* ── MAIN & SECTIONS ── */
+    main { max-width: 1200px; margin: 0 auto; padding: 0 2rem 4rem; }
+    section { padding: 5rem 0; }
+
+    /* ── HERO ── */
+    #hero {
+      min-height: 90vh; display: flex;
+      align-items: center; justify-content: space-between;
+      gap: 3rem; flex-wrap: wrap;
+    }
+    .hero-content { flex: 1; min-width: 280px; }
+    .hero-tag {
+      font-family: var(--font-mono); font-size: 0.85rem;
+      color: var(--accent); text-transform: uppercase;
+      letter-spacing: 0.15em; margin-bottom: 0.5rem;
+    }
+    .hero-sub { font-size: 1rem; color: var(--text-muted); margin: 1rem 0 2rem; }
+    .hero-btns { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; }
+    .datetime-display {
+      font-family: var(--font-mono); font-size: 0.75rem;
+      color: var(--text-muted); margin-top: 0.5rem;
+    }
+    .hero-graphic { flex: 1; min-width: 280px; display: flex; justify-content: center; }
+    .code-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem;
+      font-family: var(--font-mono); font-size: 0.85rem; line-height: 2;
+      display: flex; flex-direction: column; min-width: 280px;
+      box-shadow: var(--shadow), 0 0 60px rgba(0,255,136,0.05);
+    }
+    .cc-kw  { color: #ff79c6; }
+    .cc-str { color: var(--accent); }
+    .cc-num { color: var(--accent2); }
+    .cc-line { display: block; }
+
+    /* ── BUTTONS — Styled Buttons ── */
+    .btn {
+      display: inline-block; font-family: var(--font-mono);
+      font-size: 0.8rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.08em;
+      padding: 0.75rem 1.5rem; border-radius: 8px;
+      border: 2px solid transparent; cursor: pointer;
+      text-decoration: none; background: none;
+      transition: all var(--transition);
+    }
+    .btn-primary { background: var(--accent); color: #000; border-color: var(--accent); }
+
+    /* Pseudo-class: button:hover */
+    .btn-primary:hover {
+      background: transparent; color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,255,136,0.3);
+    }
+    .btn-outline { background: transparent; color: var(--text); border-color: var(--border); }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+    .btn-full { width: 100%; text-align: center; }
+
+    .theme-btn {
+      font-family: var(--font-mono); font-size: 0.72rem;
+      background: var(--bg-card); color: var(--text-muted);
+      border: 1px solid var(--border); padding: 0.4rem 0.8rem;
+      border-radius: 6px; cursor: pointer; transition: all var(--transition);
+    }
+    .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ── DIVIDER ── */
+    .section-divider { border: none; border-top: 1px solid var(--border); margin: 1rem 0; }
+
+    /* ── ABOUT CARDS ── */
+    .about-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem; margin-bottom: 1.5rem;
+      transition: border-color var(--transition);
+    }
+    .about-card:hover { border-color: var(--accent); }
+
+    /* Class selector: .highlight */
+    .highlight { border-left: 3px solid var(--accent); }
+    .highlight-text { color: var(--accent); font-weight: 700; }
+
+    /* ── LISTS GRID ── */
+    .lists-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+      gap: 1.5rem; margin-bottom: 3rem;
+    }
+    .list-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2rem;
+      transition: border-color var(--transition), transform var(--transition);
+    }
+    .list-card:hover { border-color: var(--accent); transform: translateY(-4px); }
+
+    /* Class selector: .styled-list */
+    .styled-list { padding-left: 1.5rem; }
+    .styled-list li { color: var(--text-muted); margin-bottom: 0.6rem; font-family: var(--font-mono); font-size: 0.88rem; }
+
+    /* ── TABLE — Styled with borders & spacing ── */
+    .table-wrapper { overflow-x: auto; }
+    .table-wrapper h3 { margin-bottom: 1.2rem; }
+
+    /* Element selector: table */
+    table {
+      width: 100%; border-collapse: collapse;
+      background: var(--bg-card); border-radius: var(--radius);
+      overflow: hidden; font-family: var(--font-mono); font-size: 0.88rem;
+    }
+    table th, table td { padding: 1rem 1.5rem; text-align: left; border-bottom: 1px solid var(--border); }
+    table thead { background: var(--accent); }
+    table th { color: #000; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; font-size: 0.75rem; }
+    table tbody tr { transition: background var(--transition); }
+    table tbody tr:hover { background: rgba(0,255,136,0.04); }
+    table td { color: var(--text-muted); }
+
+    /* ── MEDIA SECTION ── */
+    .media-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap: 2rem; margin-bottom: 3rem; }
+    .media-card {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      transition: transform var(--transition), border-color var(--transition);
+    }
+    .media-card:hover { transform: translateY(-4px); border-color: var(--accent); }
+    .media-img, .media-video { width: 100%; display: block; height: 220px; object-fit: cover; }
+    figcaption { padding: 1rem 1.5rem; font-family: var(--font-mono); font-size: 0.78rem; color: var(--text-muted); border-top: 1px solid var(--border); }
+    .link-section { text-align: center; padding: 2rem; background: var(--bg-card); border: 1px dashed var(--border); border-radius: var(--radius); }
+    .link-section p { margin-bottom: 1rem; font-size: 1rem; color: var(--text); }
+
+    /* ── INTERACTIVE SECTION ── */
+    .interactive-grid { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
+    .change-text {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem 1.5rem;
+      font-family: var(--font-mono); font-size: 0.88rem;
+      transition: all var(--transition); margin-bottom: 1rem;
+    }
+    .hidden-box {
+      background: rgba(0,255,136,0.06); border: 1px solid var(--accent);
+      border-radius: var(--radius); padding: 1.5rem;
+      display: none; animation: fadeIn 0.4s ease;
+    }
+    .hidden-box.visible { display: block; }
+    .hidden-box p { color: var(--accent); font-family: var(--font-mono); font-size: 0.9rem; }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(-8px); } to { opacity:1; transform:translateY(0); } }
+
+    /* ── CONTACT PAGE ── */
+    #contact-section { min-height: 90vh; display: flex; align-items: center; }
+    .contact-wrapper { display: grid; grid-template-columns: 1fr 1.4fr; gap: 4rem; width: 100%; align-items: start; }
+    @media (max-width: 768px) { .contact-wrapper { grid-template-columns: 1fr; gap: 2rem; } }
+    .contact-info h1 { margin-bottom: 1.2rem; }
+    .contact-info p { font-size: 1rem; line-height: 1.8; }
+    .contact-details { list-style: none; margin-top: 1.5rem; }
+    .contact-details li { font-family: var(--font-mono); font-size: 0.85rem; color: var(--text-muted); padding: 0.5rem 0; border-bottom: 1px solid var(--border); }
+
+    /* ── FORM ── */
+    .form-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 2.5rem; box-shadow: var(--shadow); }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; font-family: var(--font-mono); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .form-group input, .form-group textarea {
+      width: 100%; background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); font-family: var(--font-mono); font-size: 0.9rem;
+      padding: 0.85rem 1rem; border-radius: 8px; outline: none; resize: vertical;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(0,255,136,0.1); }
+    .form-group input::placeholder, .form-group textarea::placeholder { color: var(--text-muted); opacity: 0.5; }
+
+    /* Class selector: .field-error */
+    .field-error { display: block; font-family: var(--font-mono); font-size: 0.75rem; color: #ff5555; margin-top: 0.4rem; min-height: 1.1em; }
+
+    .form-alert { margin-top: 1.5rem; padding: 1rem 1.5rem; border-radius: 8px; font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; }
+    .form-alert.success { background: rgba(0,255,136,0.08); border: 1px solid var(--accent); color: var(--accent); }
+    .form-alert.error   { background: rgba(255,85,85,0.08);  border: 1px solid #ff5555;     color: #ff5555; }
+    .hidden { display: none !important; }
+
+    /* ── FOOTER ── */
+    footer { background: var(--bg-card); border-top: 1px solid var(--border); padding: 2.5rem 2rem; text-align: center; font-family: var(--font-mono); }
+    .footer-inner { max-width: 1200px; margin: 0 auto; }
+    footer p { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem; }
+    footer nav { margin-top: 1rem; }
+    footer nav a { font-size: 0.8rem; color: var(--text-muted); text-decoration: none; transition: color var(--transition); margin: 0 0.3rem; cursor: pointer; }
+
+    /* Pseudo-class: a:hover */
+    footer nav a:hover { color: var(--accent); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      #hero { flex-direction: column; min-height: auto; padding: 4rem 0; }
+      .hero-btns { flex-direction: column; }
+    }
+    @media (max-width: 600px) {
+      .header-inner { flex-wrap: wrap; gap: 0.5rem; }
+      nav ul { flex-wrap: wrap; justify-content: center; }
+      section { padding: 3rem 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header>
+    <div class="header-inner">
+      <!-- Logo click goes Home -->
+      <div class="logo" onclick="showPage('home')">NTWALI<span>.</span>dev</div>
+
+      <!-- ===== NAVIGATION ===== -->
+      <nav>
+        <ul>
+          <li><a onclick="showPage('home')"    id="nav-home"    class="active">Home</a></li>
+          <li><a onclick="goTo('about')"       id="nav-about">About</a></li>
+          <li><a onclick="goTo('skills')"      id="nav-skills">Skills</a></li>
+          <li><a onclick="goTo('media')"       id="nav-media">Media</a></li>
+          <li><a onclick="showPage('contact')" id="nav-contact">Contact</a></li>
+        </ul>
+      </nav>
+
+      <!-- Dark mode toggle -->
+      <button id="themeToggle" class="theme-btn">🌙 Dark Mode</button>
+    </div>
+  </header>
+
+
+  <!-- ========================================================
+       PAGE: HOME  (index.html content)
+  ======================================================== -->
+  <div id="page-home" class="page active-page">
+    <main>
+
+      <!-- Hero Section -->
+      <section id="hero">
+        <div class="hero-content">
+          <p class="hero-tag">Hello, World 👋</p>
+          <!-- h1 with ID selector #mainTitle -->
+          <h1 id="mainTitle">I'm NTWALI Gideon</h1>
+          <p class="hero-sub">Aspiring Web Developer · Age 17 · Kibagabaga, Rwanda</p>
+          <div class="hero-btns">
+            <!-- Link to Contact page -->
+            <button onclick="showPage('contact')" class="btn btn-primary">Get In Touch</button>
+            <button id="colorBtn" class="btn btn-outline">Change Color ✨</button>
+          </div>
+          <!-- Task 5: Display current date and time -->
+          <p id="datetime" class="datetime-display"></p>
+        </div>
+        <div class="hero-graphic">
+          <div class="code-card">
+            <span class="cc-line"><span class="cc-kw">const</span> developer = {</span>
+            <span class="cc-line">&nbsp;&nbsp;name: <span class="cc-str">"Gideon"</span>,</span>
+            <span class="cc-line">&nbsp;&nbsp;age: <span class="cc-num">17</span>,</span>
+            <span class="cc-line">&nbsp;&nbsp;passion: <span class="cc-str">"web dev"</span>,</span>
+            <span class="cc-line">&nbsp;&nbsp;status: <span class="cc-str">"building 🚀"</span></span>
+            <span class="cc-line">};</span>
+          </div>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- About Section -->
+      <section id="about">
+        <h2>About Me</h2>
+
+        <!-- Task 1: Paragraph introducing myself -->
+        <article class="about-card">
+          <h3>Who I Am</h3>
+          <p>
+            My name is <strong>NTWALI Gideon</strong>, a 17-year-old student living in
+            Kibagabaga, Rwanda. I am passionate about technology and constantly looking
+            for new ways to learn and grow in the digital world. Outside of coding, I
+            enjoy exploring how technology is transforming Africa's economy and
+            contributing to a brighter future for my community.
+          </p>
+          <br />
+          <p>
+            Growing up in Rwanda — a country leading the African tech revolution — has
+            inspired me to become a part of that change. I believe that the skills I
+            develop today will allow me to build solutions that matter tomorrow.
+          </p>
+        </article>
+
+        <!-- Task 1: Paragraph about interest in web development -->
+        <article class="about-card highlight">
+          <h3>My Interest in Web Development</h3>
+          <p>
+            I am deeply interested in web development because it provides one of the
+            <span class="highlight-text">highest income opportunities</span> available in today's
+            digital market. Web developers are in high demand globally, and the field
+            offers the freedom to freelance, work remotely, or build your own products.
+            For a young person in Rwanda, mastering web development is a direct pathway
+            to financial independence and global opportunity.
+          </p>
+          <br />
+          <p>
+            Beyond income, I love web development because it allows me to create
+            something from nothing — turning ideas into interactive experiences that
+            people around the world can use and enjoy. Every line of code is a step
+            toward building something meaningful.
+          </p>
+        </article>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- Lists & Skills Section -->
+      <section id="skills">
+        <h2>My Skills &amp; Interests</h2>
+
+        <div class="lists-grid">
+          <!-- Unordered list: 3 favourite websites -->
+          <div class="list-card">
+            <h3>🌐 Favourite Websites</h3>
+            <ul class="styled-list">
+              <li>GitHub</li>
+              <li>Stack Overflow</li>
+              <li>freeCodeCamp</li>
+            </ul>
+          </div>
+
+          <!-- Ordered list: 5 programming languages -->
+          <div class="list-card">
+            <h3>💻 Programming Languages</h3>
+            <ol class="styled-list">
+              <li>HTML &amp; CSS</li>
+              <li>JavaScript</li>
+              <li>Python</li>
+              <li>PHP</li>
+              <li>SQL</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Table: 3 columns × 3 rows using thead, tbody, th, tr, td -->
+        <div class="table-wrapper">
+          <h3>📊 Academic Performance</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Subject</th>
+                <th>Teacher</th>
+                <th>Marks</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Web Development</td>
+                <td>Mr. Uwimana</td>
+                <td>92%</td>
+              </tr>
+              <tr>
+                <td>Mathematics</td>
+                <td>Ms. Mukamana</td>
+                <td>88%</td>
+              </tr>
+              <tr>
+                <td>Computer Science</td>
+                <td>Mr. Habimana</td>
+                <td>95%</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <hr class="section-divider" />
+
+      <!-- Media Section -->
+      <section id="media">
+        <h2>Media &amp; Resources</h2>
+
+        <div class="media-grid">
+
+          <!-- Image with alt, figure and figcaption -->
+          <figure class="media-card">
+            <img
+              src="https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=600&q=80"
+              alt="A laptop with code on the screen representing web development"
+              class="media-img"
+            />
+            <figcaption>Web development — building the future, one line at a time.</figcaption>
+          </figure>
+
+          <!-- Video element with figure and figcaption -->
+          <figure class="media-card">
+            <video controls class="media-video">
+              <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4" />
+              Your browser does not support the video tag.
+            </video>
+            <figcaption>Sample video — the power of HTML5 media elements.</figcaption>
+          </figure>
+
+        </div>
+
+        <!-- External hyperlink -->
+        <div class="link-section">
+          <p>Want to start learning web development for free?</p>
+          <a href="https://www.freecodecamp.org" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+            Visit freeCodeCamp 🚀
+          </a>
+        </div>
+      </section>
+
+      <!-- Interactive Section — Task 5 -->
+      <section id="interactive">
+        <h2>Interactive Features</h2>
+        <div class="interactive-grid">
+          <button id="alertBtn"      class="btn btn-primary">Click for Alert 🔔</button>
+          <button id="textBtn"       class="btn btn-outline">Change This Text ✏️</button>
+          <button id="toggleSection" class="btn btn-primary">Show/Hide Info 👁️</button>
+        </div>
+        <p id="changeText" class="change-text">This text will change when you click the button above!</p>
+        <div id="hiddenSection" class="hidden-box">
+          <p>🎉 You found the hidden section! NTWALI Gideon is on his way to becoming a top web developer in Rwanda!</p>
+        </div>
+      </section>
+
+    </main>
+  </div><!-- /page-home -->
+
+
+  <!-- ========================================================
+       PAGE: CONTACT  (contact.html content — linked here)
+  ======================================================== -->
+  <div id="page-contact" class="page">
+    <main>
+      <section id="contact-section">
+        <div class="contact-wrapper">
+
+          <!-- Left info panel -->
+          <div class="contact-info">
+            <h1 id="contactTitle">Get In Touch</h1>
+            <p>Have a project in mind, a question, or just want to say hi? Fill in the form and I'll get back to you as soon as possible.</p>
+            <hr class="section-divider" />
+            <ul class="contact-details">
+              <li>📍 Kibagabaga, Rwanda</li>
+              <li>🎂 Age: 17</li>
+              <li>💼 Aspiring Web Developer</li>
+              <li>🌐 Available for freelance work</li>
+            </ul>
+            <br />
+            <!-- Back to home link -->
+            <button onclick="showPage('home')" class="btn btn-outline">← Back to Home</button>
+          </div>
+
+          <!-- Contact Form — Task 4 -->
+          <div class="form-card">
+            <form id="contactForm" novalidate>
+
+              <!-- Full Name field -->
+              <div class="form-group">
+                <label for="fullName">Full Name *</label>
+                <input type="text" id="fullName" name="fullName"
+                       placeholder="Your full name" autocomplete="name" />
+                <span class="field-error" id="nameError"></span>
+              </div>
+
+              <!-- Email field -->
+              <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email"
+                       placeholder="your@email.com" autocomplete="email" />
+                <span class="field-error" id="emailError"></span>
+              </div>
+
+              <!-- Message field -->
+              <div class="form-group">
+                <label for="message">Message *</label>
+                <textarea id="message" name="message" rows="5"
+                          placeholder="Write your message here..."></textarea>
+                <span class="field-error" id="messageError"></span>
+              </div>
+
+              <!-- Submit button -->
+              <button type="submit" class="btn btn-primary btn-full">Send Message 📨</button>
+
+            </form>
+
+            <!-- Alert box shown by JavaScript -->
+            <div id="formAlert" class="form-alert hidden"></div>
+          </div>
+
+        </div>
+      </section>
+    </main>
+  </div><!-- /page-contact -->
+
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="footer-inner">
+      <p>&copy; 2025 <strong>NTWALI Gideon</strong> · Kibagabaga, Rwanda</p>
+      <p>Built with ❤️ using HTML, CSS &amp; JavaScript</p>
+      <nav>
+        <a onclick="showPage('home')">Home</a> ·
+        <a onclick="showPage('contact')">Contact</a> ·
+        <a href="https://github.com" target="_blank">GitHub</a>
+      </nav>
+    </div>
+  </footer>
+
+
+  <!-- ============================================================
+       SCRIPT.JS — embedded externally would be: <script src="script.js"></script>
+       Task 4: Form Validation
+       Task 5: Interactivity (5 features)
+  ============================================================ -->
+  <script>
+
+    /* ============================================================
+       SPA NAVIGATION — switches between Home and Contact pages
+       without needing separate HTML files
+    ============================================================ */
+    function showPage(name) {
+      // Hide all pages
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active-page'));
+      // Show the chosen page
+      document.getElementById('page-' + name).classList.add('active-page');
+      // Update active nav link
+      document.querySelectorAll('nav ul li a').forEach(a => a.classList.remove('active'));
+      const navEl = document.getElementById('nav-' + name);
+      if (navEl) navEl.classList.add('active');
+      // Scroll to top smoothly
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    /* Scroll to section on Home page (from nav links) */
+    function goTo(sectionId) {
+      showPage('home');
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: 'smooth' });
+      }, 60);
+    }
+
+    /* ============================================================
+       Run all interactive code after page loads
+    ============================================================ */
+    document.addEventListener('DOMContentLoaded', function () {
+
+      /* ── TASK 5: Display Current Date and Time (updates every second) ── */
+      const datetimeEl = document.getElementById('datetime');
+      function updateDateTime() {
+        const now  = new Date();
+        const opts = { weekday:'long', year:'numeric', month:'long', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit' };
+        datetimeEl.textContent = '🕐 ' + now.toLocaleDateString('en-US', opts);
+      }
+      updateDateTime();
+      setInterval(updateDateTime, 1000);
+
+
+      /* ── TASK 5: Toggle Light / Dark Mode ── */
+      const themeBtn = document.getElementById('themeToggle');
+      themeBtn.addEventListener('click', function () {
+        document.body.classList.toggle('light-mode');
+        themeBtn.textContent = document.body.classList.contains('light-mode')
+          ? '🌙 Dark Mode'
+          : '☀️ Light Mode';
+      });
+
+
+      /* ── TASK 5: Button Click Alert ── */
+      document.getElementById('alertBtn').addEventListener('click', function () {
+        alert('👋 Hello! I am NTWALI Gideon — an aspiring web developer from Rwanda.\nThanks for visiting my practical project!');
+      });
+
+
+      /* ── TASK 5: Change Text on Button Click ── */
+      let textToggled = false;
+      const textBtn    = document.getElementById('textBtn');
+      const changeText = document.getElementById('changeText');
+
+      textBtn.addEventListener('click', function () {
+        if (!textToggled) {
+          // Change the text content and style
+          changeText.textContent        = '🚀 Text changed! Web development is the future — and I am building mine right here in Rwanda!';
+          changeText.style.color        = '#00ff88';
+          changeText.style.borderColor  = '#00ff88';
+          textBtn.textContent           = 'Reset Text 🔄';
+          textToggled = true;
+        } else {
+          // Reset back to original
+          changeText.textContent        = 'This text will change when you click the button above!';
+          changeText.style.color        = '';
+          changeText.style.borderColor  = '';
+          textBtn.textContent           = 'Change This Text ✏️';
+          textToggled = false;
+        }
+      });
+
+
+      /* ── TASK 5: Change Background Color ── */
+      const bgColors = [
+        { bg: '#0d0d0d', label: 'Change Color ✨' },
+        { bg: '#0a1628', label: 'Ocean Dark 🌊'   },
+        { bg: '#1a0a28', label: 'Purple Night 🌌'  },
+        { bg: '#0a2818', label: 'Forest Dark 🌿'   },
+        { bg: '#28100a', label: 'Ember Dark 🔥'    },
+      ];
+      let colorIndex = 0;
+      document.getElementById('colorBtn').addEventListener('click', function () {
+        colorIndex = (colorIndex + 1) % bgColors.length;
+        document.body.style.backgroundColor = bgColors[colorIndex].bg;
+        this.textContent = bgColors[colorIndex].label;
+      });
+
+
+      /* ── TASK 5: Show / Hide a Section ── */
+      const toggleBtn     = document.getElementById('toggleSection');
+      const hiddenSection = document.getElementById('hiddenSection');
+      toggleBtn.addEventListener('click', function () {
+        hiddenSection.classList.toggle('visible');
+        toggleBtn.textContent = hiddenSection.classList.contains('visible')
+          ? 'Hide Info 🙈'
+          : 'Show/Hide Info 👁️';
+      });
+
+
+      /* ============================================================
+         TASK 4: FORM VALIDATION
+         Validates: Full Name, Email (with @ check), Message
+         Shows: Success alert message or Error alert message
+      ============================================================ */
+      const contactForm = document.getElementById('contactForm');
+
+      contactForm.addEventListener('submit', function (e) {
+        e.preventDefault(); // Stop default form submission
+
+        // Read field values
+        const fullName = document.getElementById('fullName').value.trim();
+        const email    = document.getElementById('email').value.trim();
+        const message  = document.getElementById('message').value.trim();
+
+        // Get inline error elements
+        const nameError    = document.getElementById('nameError');
+        const emailError   = document.getElementById('emailError');
+        const messageError = document.getElementById('messageError');
+        const formAlert    = document.getElementById('formAlert');
+
+        // Clear previous error messages
+        nameError.textContent    = '';
+        emailError.textContent   = '';
+        messageError.textContent = '';
+        formAlert.className      = 'form-alert hidden';
+        formAlert.textContent    = '';
+
+        let isValid = true;
+
+        /* Validate Full Name — must not be empty */
+        if (fullName === '') {
+          nameError.textContent = '⚠️ Full name is required.';
+          isValid = false;
+        }
+
+        /* Validate Email — must not be empty and must contain @ */
+        if (email === '') {
+          emailError.textContent = '⚠️ Email address is required.';
+          isValid = false;
+        } else if (!email.includes('@')) {
+          emailError.textContent = '⚠️ Email must contain the @ symbol.';
+          isValid = false;
+        } else if (!email.includes('.')) {
+          emailError.textContent = '⚠️ Email appears invalid — missing domain.';
+          isValid = false;
+        }
+
+        /* Validate Message — must not be empty */
+        if (message === '') {
+          messageError.textContent = '⚠️ Message cannot be empty.';
+          isValid = false;
+        } else if (message.length < 10) {
+          messageError.textContent = '⚠️ Message too short (minimum 10 characters).';
+          isValid = false;
+        }
+
+        /* Show success or error alert message */
+        if (isValid) {
+          // SUCCESS message
+          formAlert.textContent = '✅ Message sent successfully! Thank you, ' + fullName + '. I will get back to you soon!';
+          formAlert.classList.remove('hidden');
+          formAlert.classList.add('success');
+          contactForm.reset(); // Clear the form
+        } else {
+          // ERROR message
+          formAlert.textContent = '❌ Please fix the errors above and try again.';
+          formAlert.classList.remove('hidden');
+          formAlert.classList.add('error');
+        }
+
+        // Scroll to the alert box
+        formAlert.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      });
+
+      /* Live validation — clears errors as user types */
+      document.getElementById('fullName').addEventListener('input', function () {
+        if (this.value.trim()) document.getElementById('nameError').textContent = '';
+      });
+      document.getElementById('email').addEventListener('input', function () {
+        if (this.value.includes('@')) document.getElementById('emailError').textContent = '';
+      });
+      document.getElementById('message').addEventListener('input', function () {
+        if (this.value.trim().length >= 10) document.getElementById('messageError').textContent = '';
+      });
+
+    }); // End DOMContentLoaded
+
+  </script>
+
+</body>
+</html>
